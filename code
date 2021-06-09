@@ -1,0 +1,69 @@
+import re
+keys=[]
+Words={}
+ListWords=[]
+def ReadFromFile(filePath):
+    try:
+        return open(filePath,"r")
+    except IOError:
+        print("File not found or path is incorrect")
+
+def ReadStrig():
+   st=input("")
+   return st.split()
+def AddWordToDic(myword):
+  if(myword[0:2] not in keys):
+     keys.append(myword[0:2])
+     Words[myword[0:2]]=[]
+  try:
+    Words[myword[0:2]].append(myword)
+    
+  except:
+    print("An exception occurred")
+
+def Load_data_To_Dic():
+  print("جار تحميل")
+  for line in(ReadFromFile("QALB-Train2014.sent").read().split("\n")):
+    if(line!=''):
+      try:
+        for word in(line.split('.ar ')[1].split(" ")):
+          myword=re.sub(r'[^ء-ي]','',word).strip()
+          if(len(myword)<=1 or myword in ListWords or myword in[".",'',","," ",' ',"(",")"," .","    ","  ",". "," -","-","- ","؟","؟ "," ؟",":"]):
+            u=0
+          else:
+            ListWords.append(myword)
+            if(len(myword)>=3):
+              if(myword[0:2] =='ال'):
+                AddWordToDic(myword[2:])
+              elif(myword[0:3] =='وال'):
+                AddWordToDic(myword[3:])
+              else:
+                AddWordToDic(myword)
+
+            else:
+              AddWordToDic(myword)
+      except:
+        print("An exception occurred")
+
+def SearchingIntoDic(word,flag):
+  Listofwordsstartwithkey=Words.get(word[0:2])
+  if(Listofwordsstartwithkey!=None):
+    if(word in Listofwordsstartwithkey):
+      print(word,end=' ')
+    elif(falg==0):
+      SearchingIntoDic(word[0:2],1)
+    else:
+      print("____") 
+  elif (word in ListWords):
+      print(word,end='')
+
+def CheckForAllWords(mywords):
+  for wordsstat in (mywords):
+    SearchingIntoDic(re.sub(r'[^ء-ي]','',wordsstat).strip(),0)
+    
+    Load_data_To_Dic()
+    
+    print(len(ListWords))
+    
+    MyWords=ReadStrig()
+CheckForAllWords(MyWords)
